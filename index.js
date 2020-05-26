@@ -84,7 +84,7 @@ function addDepartment() {
         }
     })
     .then(function(answer) {
-        connection.query = "INSERT INTO department SET ?",
+        connection.query = "INSERT INTO department VALUES ?",
         {
             name: answer.department
         },
