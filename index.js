@@ -62,8 +62,8 @@ function runQuestions() {
 }
 
 function viewAllDepartments() {
-    var query = "";
-    connection.query(query,      ,function(err, res) {
+    var query = "SELECT name FROM department";
+    connection.query(query, function(err, res) {
         if (err) throw err;
         var table = cTable.getTable(res)
         console.log(table);
@@ -84,10 +84,15 @@ function addDepartment() {
         }
     })
     .then(function(answer) {
-        var query = "ADD name  ";
-
-
-        console.log(`Added ${answer.department} to the database`)
+        connection.query = "INSERT INTO department SET ?",
+        {
+            name: answer.department
+        },
+        function(err) {
+            if (err) throw err;
+            console.log(`Added ${answer.department} to the database`);
+            runQuestions();
+        }
     });
 };
 
