@@ -220,7 +220,7 @@ function addEmployee() {
     ])
     .then(function(answer) {
         var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager) ";
-        connection.query(query, [answer.firstname, answer.lastname, answer.employeerRole, answer.employeeManager], function(err, res) {
+        connection.query(query, [answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager], function(err, res) {
             if (err) throw err;
             
             
@@ -267,7 +267,8 @@ function updateEmployeeRole() {
         connection.query(query, [answer.updateRole, answer.updatePerson], function(err, res) {
             if (err) throw err;
             
-           
+            var table = cTable.getTable(res)
+            console.log(table);
             console.log("Updated employee's role");
             runQuestions();
         })
