@@ -84,7 +84,7 @@ function addDepartment() {
         }
     })
     .then(function(answer) {
-        connection.query = "INSERT INTO department VALUES ?",
+        connection.query = "INSERT INTO department VALUE ?",
         {
             name: answer.department
         },
@@ -97,8 +97,8 @@ function addDepartment() {
 };
 
 function viewAllRoles() {
-    var query = "need a join here";
-    connection.query(query,      ,function(err, res) {
+    var query = "SELECT department_id, name FROM role INNER JOIN department ON role.department_id = department.name ";
+    connection.query(query, function(err, res) {
         if (err) throw err;
         var table = cTable.getTable(res)
         console.log(table);
@@ -143,15 +143,18 @@ function addRole() {
     }
     ])
     .then(function(answer) {
-        var query = "ADD ";
-
-        console.log(`Added ${answer.role} to the database`)
-    })
+        var query = "INSERT INTO role (title, salary, department_id) VALUES (answer.role, answer.salary, answer.departmentOfRole) ";
+        connection.query(query, [answer.role, answer.salary, answer.departmentOfRole], function(err, res) {
+            if(err) throw err;
+            console.log(`Added ${answer.role} to the database`);
+        });
+        
+    });
 };
 
 function viewAllEmployees() {
-    var query = "need some joins here";
-    connection.query(query,      ,function(err, res) {
+    var query = "SELECT * FROM employee FULL JOIN role ON employee.role_id = role.title ";
+    connection.query(query, function(err, res) {
         if (err) throw err;
         var table = cTable.getTable(res)
         console.log(table);
@@ -216,8 +219,8 @@ function addEmployee() {
     }
     ])
     .then(function(answer) {
-        var query = "ADD ";
-        connection.query(query,     , function(err, res) {
+        var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager) ";
+        connection.query(query, [answer.firstname, answer.lastname, answer.employeerRole, answer.employeeManager], function(err, res) {
             if (err) throw err;
             
             
@@ -260,8 +263,8 @@ function updateEmployeeRole() {
         }
     ])
     .then(function(answer) {
-        var query = "ADD ";
-        connection.query(query,     , function(err, res) {
+        var query = "UPDATE employee SET role_id = answer.updateRole WHERE id = answer.updatePerson ";
+        connection.query(query, [answer.updateRole, answer.updatePerson], function(err, res) {
             if (err) throw err;
             
            
