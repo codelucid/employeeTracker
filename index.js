@@ -4,9 +4,9 @@ const cTable = require("console.table");
 
 const connection = mysql.createConnection({
     host: "localhost",
-    port: 3000,
+    port: 3306,
     user: "root",
-    password: "",
+    password: "LearningIsFun",
     database: "employee_trackerDB"
 });
 
@@ -27,7 +27,8 @@ function runQuestions() {
             "Add a role",
             "View all employees",
             "Add an employee",
-            "Update employee roles"
+            "Update employee roles",
+            "EXIT"
         ]
     })
     .then(function(answer) {
@@ -97,7 +98,7 @@ function addDepartment() {
 };
 
 function viewAllRoles() {
-    var query = "SELECT department_id, name FROM role INNER JOIN department ON role.department_id = department.name ";
+    var query = "SELECT name, title, salary FROM role INNER JOIN department ON role.department_id = department.id ";
     connection.query(query, function(err, res) {
         if (err) throw err;
         var table = cTable.getTable(res)
@@ -153,7 +154,7 @@ function addRole() {
 };
 
 function viewAllEmployees() {
-    var query = "SELECT * FROM employee FULL JOIN role ON employee.role_id = role.title ";
+    var query = "SELECT title, salary, first_name, last_name, manager_id FROM role RIGHT JOIN employee ON role.id = employee.role_id ";
     connection.query(query, function(err, res) {
         if (err) throw err;
         var table = cTable.getTable(res)
@@ -214,7 +215,9 @@ function addEmployee() {
             "Ashley Rodriquez",
             "Kevin Tupik",
             "Kunal Singh",
-            "Malia Brown"
+            "Malia Brown",
+            "Billy Bo",
+            "Sarah Smith"
         ]
     }
     ])
@@ -243,7 +246,8 @@ function updateEmployeeRole() {
                 "Kevin Tupik",
                 "Kunal Singh",
                 "Malia Brown",
-                "Sarah Lourd"
+                "Billy Bo",
+                "Sarah Smith"
             ]
         },
         {
