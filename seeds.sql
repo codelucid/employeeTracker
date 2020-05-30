@@ -23,11 +23,11 @@ VALUES
 -- Insert values into rows in the table "employee"
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
-("John", "Doe", 2, 1),
+("John", "Doe", 2, 2),
 ("Mike", "Chan", 1, null),
-("Ashley", "Rodriquez", 4, 3),
+("Ashley", "Rodriquez", 4, 4),
 ("Kevin", "Tupik", 3, null),
-("Kunal", "Singh", 6, 5),
+("Kunal", "Singh", 6, 6),
 ("Malia", "Brown", 5, null),
-("Billy", "Bo", 8, 7),
+("Billy", "Bo", 8, 8),
 ("Sarah", "Smith", 7, null);

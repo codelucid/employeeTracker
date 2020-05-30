@@ -74,7 +74,7 @@ function viewAllDepartments() {
 
 function addDepartment() {
     inquirer.prompt({
-        name: "department",
+        name: "addDepartment",
         type: "input",
         message: "What is the name of the department?",
         validate: function(value) {
@@ -85,15 +85,14 @@ function addDepartment() {
         }
     })
     .then(function(answer) {
-        connection.query = "INSERT INTO department VALUE ?",
-        {
-            name: answer.department
-        },
-        function(err) {
+        // console.log(answer);
+        var query = "INSERT INTO department SET ? ";
+        var q = connection.query(query, {name:answer.addDepartment}, function(err, res) {
             if (err) throw err;
-            console.log(`Added ${answer.department} to the database`);
+            console.log(`Added ${answer.addDepartment} to the database`);
             runQuestions();
-        }
+        })
+        console.log(q.sql)
     });
 };
 
