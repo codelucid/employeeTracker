@@ -87,12 +87,12 @@ function addDepartment() {
     .then(function(answer) {
         // console.log(answer);
         var query = "INSERT INTO department SET ? ";
-        var q = connection.query(query, {name:answer.addDepartment}, function(err, res) {
+        connection.query(query, {name:answer.addDepartment}, function(err, res) {
             if (err) throw err;
             console.log(`Added ${answer.addDepartment} to the database`);
             runQuestions();
         })
-        console.log(q.sql)
+        
     });
 };
 
@@ -107,53 +107,72 @@ function viewAllRoles() {
 };
 
 function addRole() {
+    connection.query("SELECT * FROM department", function(err, results) {
+        if (err) throw err
     inquirer.prompt([
-    {
-        name: "role",
-        type: "input",
-        message: "What is the name of the role?",
-        validate: function(value) {
-            if (isNaN(value) === true) {
-                return true;
+            {
+                name: "role",
+                type: "input",
+                message: "What is the name of the role?",
+                validate: function(value) {
+                    if (isNaN(value) === true) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "What is the salary of the role?",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
+            {
+                name: "departmentOfRole",
+                type: "rawlist",
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < results.length; i++) {
+                        choiceArray.push(results[i].name)
+                    }
+                    return choiceArray;
+                },
+                message: "Which department does the role belong to?"
             }
-            return false;
-        }
-    },
-    {
-        name: "salary",
-        type: "input",
-        message: "What is the salary of the role?",
-        validate: function(value) {
-            if (isNaN(value) === false) {
-                return true;
+        ])
+        .then(function(answer) {
+            var chosenItem;
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].name === answer.departmentOfRole) {
+                    chosenItem = results[i].id;
+                }
             }
-            return false;
-        }
-    },
-    {
-        name: "departmentOfRole",
-        type: "rawlist",
-        message: "Which department does the role belong to?",
-        choices: [
-            "Sales",
-            "Engineering",
-            "Finance",
-            "Legal"
-        ]
-    }
-    ])
-    .then(function(answer) {
-        var query = "INSERT INTO role (title, salary, department_id) VALUES (answer.role, answer.salary, answer.departmentOfRole) ";
-        connection.query(query, [answer.role, answer.salary, answer.departmentOfRole], function(err, res) {
-            if(err) throw err;
-            console.log(`Added ${answer.role} to the database`);
+            
+            
+            // Need help figuring this out...
+                var query = "INSERT INTO role SET ? "; 
+                
+                connection.query(query, {title: answer.role, salary: answer.salary, department_id: chosenItem}, function(err, res) {
+                    if(err) throw err;
+                    console.log(`Added ${answer.role} to the database`);
+                    runQuestions();
+                });
+        })
+        .catch(function(err) {
+            console.log(err)
         });
         
     });
-};
+};   
+
 
 function viewAllEmployees() {
-    var query = "SELECT title, salary, first_name, last_name, manager_id FROM role RIGHT JOIN employee ON role.id = employee.role_id ";
+    var query = "SELECT employee.id, title, salary, first_name, last_name, manager_id FROM employee LEFT JOIN role ON role.id = employee.role_id ";
     connection.query(query, function(err, res) {
         if (err) throw err;
         var table = cTable.getTable(res)
@@ -164,71 +183,66 @@ function viewAllEmployees() {
 };
 
 function addEmployee() {
-    inquirer.prompt([
-    {    
-        name: "firstname",
-        type: "input",
-        message: "What is the employee's first name?",
-        validate: function(value) {
-            if (isNaN(value) === true) {
-                return true;
+    connection.query("SELECT * FROM employee", function(err, results) {
+        if (err) throw err;
+        inquirer.prompt([
+        {    
+            name: "firstname",
+            type: "input",
+            message: "What is the employee's first name?",
+            validate: function(value) {
+                if (isNaN(value) === true) {
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
-
-    },
-    {
-        name: "lastname",
-        type: "input",
-        message: "What is the employee's last name?",
-        validate: function(value) {
-            if (isNaN(value) === true) {
-                return true;
+        },
+        {
+            name: "lastname",
+            type: "input",
+            message: "What is the employee's last name?",
+            validate: function(value) {
+                if (isNaN(value) === true) {
+                    return true;
+                }
+                return false;
             }
-            return false;
+        },
+        {
+            name: "employeeRole",
+            type: "rawlist",
+            choices: function() {
+                let choiceArray = [];
+                for (var i = 0; i < results.length; i++) {
+                    choiceArray.push(results[i].role_id);
+                }
+                return choiceArray;
+            },
+            message: "What is the employee's role?"   
+        },
+        {
+            name: "employeeManager",
+            type: "rawlist",
+            choices: function() {
+                let choiceArray = [];
+                for (var i = 0; i < results.length; i++) {
+                    choiceArray.push(results[i].manager_id);
+                }
+                return choiceArray;
+            },
+            message: "Who is the employee's manager?"
         }
-    },
-    {
-        name: "employeeRole",
-        type: "rawlist",
-        message: "What is the employee's role?",
-        choices: [
-            "Sales Lead",
-            "Salesperson",
-            "Lead Engineer",
-            "Software Engineer",
-            "Account Manager",
-            "Accountant",
-            "Legal Team Lead",
-            "Lawyer"
-        ]
-    },
-    {
-        name: "employeeManager",
-        type: "rawlist",
-        message: "Who is the employee's manager?",
-        choices: [
-            "None",
-            "John Doe",
-            "Mike Chan",
-            "Ashley Rodriquez",
-            "Kevin Tupik",
-            "Kunal Singh",
-            "Malia Brown",
-            "Billy Bo",
-            "Sarah Smith"
-        ]
-    }
-    ])
-    .then(function(answer) {
-        var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager) ";
-        connection.query(query, [answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager], function(err, res) {
-            if (err) throw err;
+        ])
+        .then(function(answer) {
+            var query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager) ";
+            connection.query(query, [answer.firstname, answer.lastname, answer.employeeRole, answer.employeeManager], function(err, res) {
+                if (err) throw err;
             
             
             console.log(`Added ${answer.firstname} ${answer.lastname} to the database`);
             runQuestions();
-        })
+            })
+        });
     });
 };
 
